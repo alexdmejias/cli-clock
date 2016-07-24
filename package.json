@@ -12,7 +12,7 @@
     "terminal"
   ],
   "bin": {
-    "cli-clock": "index.js"
+    "cli-clock": "./index.js"
   },
   "author": "alex mejias",
   "license": "MIT",
