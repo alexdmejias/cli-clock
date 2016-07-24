@@ -1,7 +1,6 @@
 {
   "name": "cli-clock",
   "version": "0.0.1",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -12,9 +11,20 @@
     "clock",
     "terminal"
   ],
+  "bin": {
+    "cli-clock": "index.js"
+  },
   "author": "alex mejias",
-  "license": "ISC",
-  "dependencies": {
-    "minimist": "^1.2.0"
-  }
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amejias101/cli-clock.git"
+  },
+  "bugs": {
+    "url": "https://github.com/amejias101/cli-clock/issues"
+  },
+  "homepage": "https://github.com/amejias101/cli-clock#readme",
+  "description": ""
 }
