@@ -12,11 +12,13 @@
     "terminal"
   ],
   "bin": {
-    "cli-clock": "./index.js"
+    "wasd": "./index.js"
   },
   "author": "alex mejias",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "cli-color": "^1.1.0"
+  },
   "devDependencies": {},
   "repository": {
     "type": "git",
@@ -26,5 +28,6 @@
     "url": "https://github.com/amejias101/cli-clock/issues"
   },
   "homepage": "https://github.com/amejias101/cli-clock#readme",
-  "description": ""
+  "description": "",
+  "preferGlobal": true
 }
