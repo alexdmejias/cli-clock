@@ -10,7 +10,8 @@
  * 
  * $ node cli-clock.js 
  * $ node cli-clock.js " " X
- * $ node cli-clock.js O 🐶 
+ * $ node cli-clock.js -b " " -f X
+ * $ node cli-clock.js -b O -f 🐶 
  * $ node cli-clock.js 😁 😡
  * 
  * 
@@ -18,8 +19,9 @@
 
 require('source-map-support/register');
 
+const argv = require('minimist')(process.argv.slice(2));
 const Clock = require('./dist');
-const clock = new Clock();
+const clock = new Clock(argv);
 
 function update() {
   clock.update();
