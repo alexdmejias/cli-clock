@@ -1,5 +1,6 @@
-const Clock = require('./bin/index');
+require('source-map-support/register');
 
+const Clock = require('./dist');
 const clock = new Clock();
 
 clock.update();
