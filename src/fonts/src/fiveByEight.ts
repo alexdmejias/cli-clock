@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: 'fiveByEight',
   width: 5,
   height: 8,

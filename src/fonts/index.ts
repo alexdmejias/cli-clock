@@ -1,6 +1,6 @@
-const fiveByEight = require('./src/fiveByEight');
+import fiveByEight from './src/fiveByEight';
 
-export {
+export default {
   fiveByEight
 }
 
