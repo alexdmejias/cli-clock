@@ -21,36 +21,13 @@ const colors = require('cli-color');
 const fonts = require('./fonts');
 
 function Clock() {
-  if (process.stdout.rows) {
-    this.rows = process.stdout.rows;
-    this.columns = process.stdout.columns;
-  } else {
-    this.rows = 20;
-    this.columns = 50;
-  }
-
-	this.availableNumbers = {
-		'5x8': [
-			['11111', '10001', '10001', '10001', '10001', '10001', '10001', '11111'], // 0 
-			['00001', '00001', '00001', '00001', '00001', '00001', '00001', '00001'], // 1
-			['01110', '10001', '00001', '00010', '00100', '01000', '10000', '11111'], // 2
-			['11111', '00001', '00001', '01111', '00001', '00001', '00001', '11111'], // 3
-			['00110', '01010', '01010', '10010', '11111', '00010', '00010', '00010'], // 4
-			['11111', '10000', '10000', '11110', '00001', '00001', '00001', '11110'], // 5
-			['11111', '10000', '10000', '11111', '10001', '10001', '10001', '11111'], // 6
-			['11111', '00001', '00010', '00100', '00100', '01000', '01000', '10000'], // 7
-			['11111', '10001', '10001', '11111', '10001', '10001', '10001', '11111'], // 8
-			['11111', '10001', '10001', '11111', '00001', '00001', '00001', '00001'], // 9
-			['00000', '00000', '00100', '00000', '00000', '00100', '00000', '00000']  // :
-		]
-	};
+	this.setSize();
 
 	this.availableSets = [['•','X'], ['\\', '/'], ['-', '_'], ['0', '1'], [' ', '█']];
 
-	this.numbersToUse = this.availableNumbers['5x8'];
+	this.numbersToUse = fonts.fiveByEight;
 
 	this.currentSet = this.availableSets[utils.getRandom(this.availableSets)];
-
 
 	if (process.argv[2] && process.argv[3]) {
 		this.currentSet = process.argv.slice(2, 4);
@@ -71,6 +48,16 @@ function Clock() {
 	}
 }
 
+Clock.prototype.setSize = function() {
+	if (process.stdout.rows && process.stdout.rows) {
+    this.rows = process.stdout.rows;
+    this.columns = process.stdout.columns;
+  } else {
+    this.rows = 20;
+    this.columns = 50;
+  }
+}
+
 // returns the size of the first character in a set
 Clock.prototype.getLetterDimensions = function(character) {
 	return {
@@ -80,14 +67,12 @@ Clock.prototype.getLetterDimensions = function(character) {
 	}
 }
 
-Clock.prototype.getTotalWidth = function(numberSet) {
-	const letterDimensions = this.getLetterDimensions(numberSet[0]);
-	return (letterDimensions.width + (letterDimensions.padding * 2)) * 5;
+Clock.prototype.getTotalWidth = function() {
+	return (this.numbersToUse.width + (this.numbersToUse.padding * 2)) * 5;
 }
 
 Clock.prototype.getTotalHeight = function(numberSet) {
-	const letterDimensions = this.getLetterDimensions(numberSet[0]);
-	return (letterDimensions.height + (letterDimensions.padding * 2));
+	return (this.numbersToUse.height + (this.numbersToUse.padding * 2));
 }
 
 /**
@@ -104,23 +89,23 @@ Clock.prototype.setBg = function() {
  * Replace the appropriate background characters with the foreground ones
  */
 Clock.prototype.setFg = function(numbers) {
-  const characterDimensions = this.getLetterDimensions(this.numbersToUse[0]);
-	const totalTextWidth = this.getTotalWidth(this.numbersToUse);
-	const totalTextHeight = this.getTotalHeight(this.numbersToUse);
+	const totalTextWidth = this.getTotalWidth();
+	const totalTextHeight = this.getTotalHeight();
 
 	const terminalHorCenter = Math.floor(this.columns / 2); 
 	const terminalOffset = terminalHorCenter - Math.floor(totalTextWidth / 2);
 	
 	const terminalVerCenter = Math.floor(this.rows / 2);
-	const terminalVerOffset = terminalVerCenter - (characterDimensions.height / 2); 
+	const terminalVerOffset = terminalVerCenter - (this.numbersToUse.height / 2); 
 
 	const numToDisplay = this.getTime();
 
 	for (var h = 0; h < numToDisplay.length; h++) { // cycle through the time numbers
-		const leftIndex = (h * (characterDimensions.width + (characterDimensions.padding * 2))) + terminalOffset;
+		const leftIndex = (h * (this.numbersToUse.width + (this.numbersToUse.padding * 2))) + terminalOffset;
 
-		for (var i = 0; i < characterDimensions.height; i++) { // cycle through the height of the numbers
-			const thisRow = this.numbersToUse[numToDisplay[h]][i].split(''); // the row from the number to cycle through
+		for (var i = 0; i < this.numbersToUse.height; i++) { // cycle through the height of the numbers
+			const thisRow = this.numbersToUse.characters[numToDisplay[h]][i].split(''); // the row from the number to cycle through
+			
 			this.buffer[terminalVerOffset + i].splice(leftIndex, thisRow.length, ...thisRow); // replace the sections of the buffer with the section from the number
 		}
 	}
@@ -139,22 +124,17 @@ Clock.prototype.clear = function() {
 Clock.prototype.getTime = function() {
 	const d = new Date();
 	const timeArr: string[] = d.toTimeString().slice(0, 5).split('');
-	const timeArrNum: number[] = [];
-
-	// convert the strings numbers into numbers
-	timeArr.map((curr, i) => {
-		timeArrNum[i] = parseInt(curr, 10);
-	});
 
 	// replace the colon with the colon index from the font array
-	timeArrNum[2] = 10;
-	return timeArrNum;
+	timeArr[2] = 'separator';
+	return timeArr;
 }
 
 /**
  * Update the buffer
  */
 Clock.prototype.update = function() {
+	this.setSize();
 	this.setBg();
 	this.setFg();
 }
