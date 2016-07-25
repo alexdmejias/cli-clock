@@ -17,9 +17,19 @@
   "author": "alex mejias",
   "license": "MIT",
   "dependencies": {
-    "cli-color": "^1.1.0"
+    "cli-color": "^1.1.0",
+    "source-map-support": "^0.4.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-add-src": "^0.2.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-mocha": "^2.2.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-spawn-mocha": "^2.2.2",
+    "gulp-typescript": "^2.13.6",
+    "merge2": "^1.0.2"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/amejias101/cli-clock.git"

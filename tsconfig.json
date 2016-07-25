@@ -1,13 +1,15 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es2015",
-        "noImplicitAny": false,
-        "sourceMap": true,
-        "outDir": "./bin"
-    },
-    "exclude": [
-        "node_modules",
-        "bin" 
-    ]
-} 
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "dist",
+    "declaration": true,
+    "rootDir": "src"
+  },
+  "exclude": [
+    "./node_modules",
+    "./examples",
+    "./dist"
+  ]
+}
