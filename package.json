@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "gulp watch",
+    "prepublish": "typings install && gulp"
   },
   "keywords": [
     "cli",
@@ -12,7 +14,7 @@
     "terminal"
   ],
   "bin": {
-    "wasd": "./index.js"
+    "wasd": "./cli-clock.js"
   },
   "author": "alex mejias",
   "license": "MIT",
@@ -30,7 +32,8 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-spawn-mocha": "^2.2.2",
     "gulp-typescript": "^2.13.6",
-    "merge2": "^1.0.2"
+    "merge2": "^1.0.2",
+    "typescript": "^2.1.0-dev.20160725"
   },
   "repository": {
     "type": "git",
