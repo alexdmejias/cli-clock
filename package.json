@@ -17,6 +17,7 @@
   "author": "alex mejias",
   "license": "MIT",
   "dependencies": {
+    "cli-clear": "^1.0.4",
     "cli-color": "^1.1.0",
     "source-map-support": "^0.4.2"
   },

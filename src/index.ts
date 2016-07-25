@@ -1,5 +1,6 @@
 const utils = require('./utilities');
 const colors = require('cli-color');
+const clear = require('cli-clear');
 
 import fonts from './fonts';
 
@@ -98,7 +99,7 @@ Clock.prototype.setFg = function(numbers) {
  * Helper to Clear out the background
  */
 Clock.prototype.clear = function() {
-	console.log('\033c');
+  clear();
 }
 
 /**
