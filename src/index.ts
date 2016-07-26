@@ -22,14 +22,6 @@ class Clock {
     this.setColors(args);
     this.setSet(args);
     this.setFont();
-
-    // MODE TO UPDATE function
-    for (let i = 0; i < this.rows; i++) {
-      this.buffer[i] = [];
-      for (let h = 0; h < this.columns; h++) {
-        this.buffer[i][h] = 0;
-      }
-    }
   }
 
   public setColors(args): void {
@@ -99,9 +91,14 @@ class Clock {
    */
   public setBg(): void {
     // cycle through all the columns putting a zero on every column
-    this.buffer.map((curr, i) => {
-      this.buffer[i].fill(0);
-    });
+    // rows then columns
+    this.buffer = [];
+    for (let i = 0; i < this.rows; i++) {
+      this.buffer[i] = [];
+      for (let h = 0; h < this.columns; h++) {
+        this.buffer[i][h] = 0;
+      }
+    }
   }
 
   /**
