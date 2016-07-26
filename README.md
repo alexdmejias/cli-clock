@@ -8,6 +8,8 @@ Cli-Clock is a clock for your terminal. Once you run the program, it will displa
     $ node cli-clock.js -b " " -f X
     $ node cli-clock.js -b O -f 🐶 
     $ node cli-clock.js 😁 😡
+    $ node cli-clock.js --bc=red --fc=yellow -b=" " -f🐶
+    $ node cli-clock.js --bc=red -b=" " -f🐶
 
 
 

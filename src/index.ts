@@ -12,10 +12,14 @@ class Clock {
   public currentSet: string[];
   public font;
 
+  public fc: string = 'black';
+  public bc: string = 'black';
+
   public buffer: Array<number[]> = [];
 
   constructor(args) {
     this.setSize();
+    this.setColors(args);
     this.setSet(args);
     this.setFont();
 
@@ -28,10 +32,24 @@ class Clock {
     }
   }
 
+  public setColors(args): void {
+    if (args.bc && colors[args.bc]) {
+      this.bc = args.bc;
+    }
+
+    if (args.fc && colors[args.fc]) {
+      this.fc = args.fc;
+    }
+  }
+  
   public setFont(): void {
     this.font = fonts.fiveByEight;
   }
 
+  /**
+   * Sets the set of characters to use for both the foreground 
+   * and background
+   */
   public setSet(args): void {
     if (args.b && args.f) {
       this.currentSet = [args.b, args.f];
@@ -44,6 +62,9 @@ class Clock {
         this.currentSet = this.currentSet.reverse();
       }
     }
+
+    this.currentSet[0] = colors[this.bc](this.currentSet[0]);
+    this.currentSet[1] = colors[this.fc](this.currentSet[1]);
   }
 
   public setSize(): void {
