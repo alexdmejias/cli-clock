@@ -29,12 +29,14 @@ class Clock {
   }
 
   public setColors(args): void {
-    if (args.bc && colors[args.bc]) {
-      this.bc = args.bc;
-    }
+    if (args.colors) {
+      if (colors[args.colors[0]]) {
+        this.fc = args.colors[0];
+      }
 
-    if (args.fc && colors[args.fc]) {
-      this.fc = args.fc;
+      if (colors[args.colors[1]]) {
+        this.bc = args.colors[1];
+      }
     }
   }
 
@@ -43,7 +45,7 @@ class Clock {
   }
 
   public setFormat(args): void {
-    this.twelveHourFormat = args.twelve;
+    this.twelveHourFormat = args.twelveHours;
   }
 
   /**
@@ -51,16 +53,18 @@ class Clock {
    * and background
    */
   public setSet(args): void {
-    if (args.b && args.f) {
-      this.currentSet = [args.b, args.f];
-    } else if (args._.length === 2) {
-      this.currentSet = args._;
-    } else {
-      this.currentSet = this.availableSets[utils.getRandom(this.availableSets)];
-      // randomly reverse the array, so we can have a random BG and FG
-      if (Math.round(Math.random())) {
-        this.currentSet = this.currentSet.reverse();
-      }
+    this.currentSet = this.availableSets[utils.getRandom(this.availableSets)];
+    // randomly reverse the array, so we can have a random BG and FG
+    if (Math.round(Math.random())) {
+      this.currentSet = this.currentSet.reverse();
+    }
+
+    if (args.background) {
+      this.currentSet[0] = args.background;
+    }
+
+    if (args.foreground) {
+      this.currentSet[1] = args.foreground;
     }
 
     this.currentSet[0] = colors[this.bc](this.currentSet[0]);
