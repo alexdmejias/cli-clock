@@ -15,6 +15,8 @@ class Clock {
   public fc: string = 'black';
   public bc: string = 'black';
 
+  public twelveHourFormat: boolean = true;
+
   public buffer: Array<number[]> = [];
 
   constructor(args) {
@@ -22,6 +24,7 @@ class Clock {
     this.setColors(args);
     this.setSet(args);
     this.setFont();
+    this.setFormat(args);
   }
 
   public setColors(args): void {
@@ -33,9 +36,13 @@ class Clock {
       this.fc = args.fc;
     }
   }
-  
+
   public setFont(): void {
     this.font = fonts.fiveByEight;
+  }
+
+  public setFormat(args): void {
+    this.twelveHourFormat = args.twelve;
   }
 
   /**
@@ -123,7 +130,8 @@ class Clock {
       for (let i = 0; i < this.font.height; i++) { 
 
         // the row from the number to cycle through
-        const thisRow = this.font.characters[numToDisplay[h]][i].split('');
+        const currentChar = this.font.characters[numToDisplay[h]]; 
+        const thisRow = currentChar[i].split('');
 
         // replace the sections of the buffer with the section from the number
         this.buffer[terminalVerOffset + i].splice(leftIndex, thisRow.length, ...thisRow);
@@ -142,12 +150,43 @@ class Clock {
    * Get the numbers that will be displayed. Will come from the time object
    */
   public getTime(): string[] {
+    // TODO: CLEAN.THIS.UP
     const d = new Date();
-    // get the time from the string that we get
-    const timeArr: string[] = d.toTimeString().slice(0, 5).split('');
+    const timeArr: string[] = [];
+    const hours = d.getHours();
+    const minutes = d.getMinutes();
+    const hoursString: string[] = hours.toString().split('');
+    const minutesString: string[] = minutes.toString().split('');
+    
+    if (!this.twelveHourFormat) {
+      timeArr[0] = hoursString[0];
+      timeArr[1] = hoursString[1];
+    } else {
+      let twelveHours = hours;
 
-    // replace the colon with the colon index from the font array
+      if (hours > 12) {
+        twelveHours = hours - 12;
+      }
+
+      if (twelveHours < 10) {
+        timeArr[0] = '0';
+        timeArr[1] = twelveHours.toString();
+      } else {
+        timeArr[1] = twelveHours.toString()[1];
+        timeArr[1] = hours.toString();
+      } 
+    }
+
     timeArr[2] = 'separator';
+
+    if (minutes < 10) {
+      timeArr[3] = '0';
+      timeArr[4] = minutesString[0];
+    } else {
+      timeArr[3] = minutesString[0];
+      timeArr[4] = minutesString[1];
+    }
+    
     return timeArr;
   }
 
