@@ -13,7 +13,7 @@ class Clock {
   public currentSet: string[];
   public font;
 
-  public fc: string = 'black';
+  public fc: string = 'white';
   public bc: string = 'black';
 
   public twelveHourFormat: boolean = true;
