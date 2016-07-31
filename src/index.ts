@@ -120,22 +120,28 @@ class Clock {
     const totalTextWidth = this.getTotalWidth();
 
     const terminalHorCenter = Math.floor(this.columns / 2);
-    const terminalOffset = terminalHorCenter - Math.floor(totalTextWidth / 2);
+    let terminalOffset = terminalHorCenter - Math.floor(totalTextWidth / 2);
 
     const terminalVerCenter = Math.floor(this.rows / 2);
     const terminalVerOffset = terminalVerCenter - (this.font.height / 2);
 
     const numToDisplay = this.getTime();
 
+    let startingLeftIndex: number = 0;
+
+    if (numToDisplay.length === 4) {
+      terminalOffset += this.font.width;
+    }
+
     // cycle through the time numbers
-    for (let h = 0; h < numToDisplay.length; h++) {
+    for (let h = startingLeftIndex; h < numToDisplay.length; h++) {
       const leftIndex = (h * (this.font.width + (this.font.padding * 2))) + terminalOffset;
 
       // cycle through the height of the numbers
-      for (let i = 0; i < this.font.height; i++) { 
+      for (let i = 0; i < this.font.height; i++) {
 
         // the row from the number to cycle through
-        const currentChar = this.font.characters[numToDisplay[h]]; 
+        const currentChar = this.font.characters[numToDisplay[h]];
         const thisRow = currentChar[i].split('');
 
         // replace the sections of the buffer with the section from the number
@@ -157,13 +163,15 @@ class Clock {
   public getTime(): string[] {
     let timeArr: string[];
     let timeFormat: string = 'HH:mm';
-
+    let separatorIndex: number = 2;
     if (this.twelveHourFormat) {
-      timeFormat = 'hh:mm';
+      timeFormat = 'h:mm';
+      separatorIndex = 1;
     }
 
     timeArr = moment().format(timeFormat).split('');
-    timeArr[2] = 'separator';
+
+    timeArr[separatorIndex] = 'separator';
 
     return timeArr;
   }
