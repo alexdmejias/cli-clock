@@ -1,6 +1,6 @@
 {
   "globalDependencies": {
     "cli-color": "registry:dt/cli-color#0.0.0+20160317120654",
-    "node": "registry:dt/node#6.0.0+20160720070758"
+    "node": "https://raw.githubusercontent.com/amejias101/DefinitelyTyped/master/node/node.d.ts"
   }
 }
