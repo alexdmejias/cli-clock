@@ -5,7 +5,6 @@
   "scripts": {
     "start": "node cli-clock.js",
     "prepublish": "typings i && tsc",
-    "postinstall": "typings i && tsc",
     "build": "typings i && tsc"
   },
   "keywords": [
