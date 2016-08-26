@@ -1,10 +1,10 @@
 {
   "name": "cli-clock",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "main": "cli-clock.js",
   "scripts": {
     "start": "node cli-clock.js",
-    "prepublish": "typings install && tsc",
+    "prepublish": "typings i && tsc",
     "postinstall": "typings i && tsc",
     "build": "typings i && tsc"
   },
