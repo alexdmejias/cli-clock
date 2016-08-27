@@ -1,8 +1,12 @@
 # CLI-CLOCK 
- 
+
+## Installation
+
+`> npm install cli-clock -g`
+
 Cli-Clock is a clock for your terminal. Once you run the program, it will display the current time on your terminal windo and ti will update every thirty seconds. The clock is formed by two characters, which are choosen from a preselected set of characters or passed as arguments by the user. Once the program starts, the application will measure the size of the current terminal window and display the time in the center of the window. * * Example usage:
 
-## Ssage
+## Usage
 
     Usage: cli-clock [options]
 
