@@ -12,21 +12,17 @@ program
   .option('-f, --foreground [character]', 'foreground characters color')
   .option('-c, --colors [item(s)]', 'characters colors for the foreground and background, respectively', list)
   .option('-t, --twelve-hours', 'twelve hour format')
+  .option('-x, --coin [character]', 'coinbase compatible currency pair, eg: LTC-USD or ETH-USD')
   .parse(process.argv);
 
 const clock = new Clock(program);
 
-function update() {
-  clock.update();
-  clock.draw();
-}
-
 setInterval(() => {
-  update();
+  clock.update();
 }, 30000);
 
 process.stdout.on('resize', () => {
-  update();
+  clock.update();
 });
 
-update();
+clock.update();
