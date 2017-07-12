@@ -13,13 +13,14 @@ program
   .option('-c, --colors [item(s)]', 'characters colors for the foreground and background, respectively', list)
   .option('-t, --twelve-hours', 'twelve hour format')
   .option('-x, --coin [character]', 'coinbase compatible currency pair, eg: LTC-USD or ETH-USD')
+  .option('-i, --interval <n>', 'refresh rate, in milliseconds, defaults to 30 seconds')
   .parse(process.argv);
 
 const clock = new Clock(program);
 
 setInterval(() => {
   clock.update();
-}, 30000);
+}, program.interval || 30 * 1000);
 
 process.stdout.on('resize', () => {
   clock.update();
