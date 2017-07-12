@@ -1,23 +1,44 @@
 "use strict";
-var utils = require('./utilities');
-var colors = require('cli-color');
-var clear = require('cli-clear');
-var moment = require('moment');
-var fonts_1 = require('./fonts');
-var Clock = (function () {
-    function Clock(args) {
+Object.defineProperty(exports, "__esModule", { value: true });
+const utils = require('./utilities');
+const colors = require('cli-color');
+const clear = require('cli-clear');
+const moment = require('moment');
+const fetch = require('node-fetch');
+const fonts_1 = require("./fonts");
+class Clock {
+    constructor(args) {
         this.availableSets = [['•', 'X'], ['\\', '/'], ['-', '_'], ['0', '1'], [' ', '█']];
         this.fc = 'white';
         this.bc = 'black';
+        this.coin = '';
         this.twelveHourFormat = true;
         this.buffer = [];
+        console.log('constructor', args);
         this.setSize();
         this.setColors(args);
         this.setSet(args);
         this.setFont();
-        this.setFormat(args);
+        if (args.coin) {
+            this.setCoin(args);
+        }
+        else {
+            this.setFormat(args);
+        }
     }
-    Clock.prototype.setColors = function (args) {
+    setCoin(args) {
+        const acceptedCryptos = ['BTC', 'ETH', 'LTC'];
+        const acceptedCurrencies = ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BRL', 'BSD', 'BTC', 'BTN', 'BWP', 'BYN', 'BYR', 'BZD', 'CAD', 'CDF', 'CHF', 'CLF', 'CLP', 'CNY', 'COP', 'CRC', 'CUC', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EEK', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GGP', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'IMP', 'INR', 'IQD', 'ISK', 'JEP', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LTL', 'LVL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRO', 'MTL', 'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STD', 'SVC', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU', 'UZS', 'VEF', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU', 'XCD', 'XDR', 'XOF', 'XPD', 'XPF', 'XPT', 'YER', 'ZAR', 'ZMK', 'ZMW', 'ZWL'];
+        const givenPair = args.coin.split('-');
+        if (acceptedCryptos.indexOf(givenPair[0]) > -1 && acceptedCurrencies.indexOf(givenPair[1]) > -1) {
+            this.coin = args.coin;
+        }
+        else {
+            console.log(`${args.coin} is not an accepted currency pair`);
+            process.exit();
+        }
+    }
+    setColors(args) {
         if (args.colors) {
             if (colors[args.colors[0]]) {
                 this.fc = args.colors[0];
@@ -26,18 +47,18 @@ var Clock = (function () {
                 this.bc = args.colors[1];
             }
         }
-    };
-    Clock.prototype.setFont = function () {
+    }
+    setFont() {
         this.font = fonts_1.default.fiveByEight;
-    };
-    Clock.prototype.setFormat = function (args) {
+    }
+    setFormat(args) {
         this.twelveHourFormat = args.twelveHours;
-    };
+    }
     /**
      * Sets the set of characters to use for both the foreground
      * and background
      */
-    Clock.prototype.setSet = function (args) {
+    setSet(args) {
         this.currentSet = this.availableSets[utils.getRandom(this.availableSets)];
         // randomly reverse the array, so we can have a random BG and FG
         if (Math.round(Math.random())) {
@@ -51,8 +72,8 @@ var Clock = (function () {
         }
         this.currentSet[0] = colors[this.bc](this.currentSet[0]);
         this.currentSet[1] = colors[this.fc](this.currentSet[1]);
-    };
-    Clock.prototype.setSize = function () {
+    }
+    setSize() {
         if (process.stdout.rows && process.stdout.rows) {
             this.rows = process.stdout.rows;
             this.columns = process.stdout.columns;
@@ -61,108 +82,129 @@ var Clock = (function () {
             this.rows = 20;
             this.columns = 50;
         }
-    };
+    }
     // returns the size of the first character in a set
-    Clock.prototype.getLetterDimensions = function (character) {
+    getLetterDimensions(character) {
         return {
             height: character.length,
             padding: 1,
             width: character[0].split('').length
         };
-    };
-    Clock.prototype.getTotalWidth = function () {
-        return (this.font.width + (this.font.padding * 2)) * 5;
-    };
-    Clock.prototype.getTotalHeight = function () {
+    }
+    getTotalWidth(numOfChars = 5) {
+        return (this.font.width + (this.font.padding * 2)) * numOfChars;
+    }
+    getTotalHeight() {
         return (this.font.height + (this.font.padding * 2));
-    };
+    }
     /**
      * Fill the background with zeros aka the background character
      */
-    Clock.prototype.setBg = function () {
+    setBg() {
         // cycle through all the columns putting a zero on every column
         // rows then columns
         this.buffer = [];
-        for (var i = 0; i < this.rows; i++) {
+        for (let i = 0; i < this.rows; i++) {
             this.buffer[i] = [];
-            for (var h = 0; h < this.columns; h++) {
+            for (let h = 0; h < this.columns; h++) {
                 this.buffer[i][h] = 0;
             }
         }
-    };
-    /**
-     * Replace the appropriate background characters with the foreground ones
-     */
-    Clock.prototype.setFg = function () {
-        var totalTextWidth = this.getTotalWidth();
-        var terminalHorCenter = Math.floor(this.columns / 2);
-        var terminalOffset = terminalHorCenter - Math.floor(totalTextWidth / 2);
-        var terminalVerCenter = Math.floor(this.rows / 2);
-        var terminalVerOffset = terminalVerCenter - (this.font.height / 2);
-        var numToDisplay = this.getTime();
-        var startingLeftIndex = 0;
-        if (numToDisplay.length === 4) {
-            terminalOffset += this.font.width;
-        }
-        // cycle through the time numbers
-        for (var h = startingLeftIndex; h < numToDisplay.length; h++) {
-            var leftIndex = (h * (this.font.width + (this.font.padding * 2))) + terminalOffset;
-            // cycle through the height of the numbers
-            for (var i = 0; i < this.font.height; i++) {
-                // the row from the number to cycle through
-                var currentChar = this.font.characters[numToDisplay[h]];
-                var thisRow = currentChar[i].split('');
-                // replace the sections of the buffer with the section from the number
-                (_a = this.buffer[terminalVerOffset + i]).splice.apply(_a, [leftIndex, thisRow.length].concat(thisRow));
-            }
-        }
-        var _a;
-    };
-    /**
-     * Helper to Clear out the background
-     */
-    Clock.prototype.clear = function () {
-        clear();
-    };
+    }
     /**
      * Get the numbers that will be displayed. Will come from the time object
      */
-    Clock.prototype.getTime = function () {
-        var timeArr;
-        var timeFormat = 'HH:mm';
-        var separatorIndex = 2;
+    getTime() {
+        let timeFormat = 'HH:mm';
+        let separatorIndex = 2;
         if (this.twelveHourFormat) {
             timeFormat = 'h:mm';
             separatorIndex = 1;
         }
-        timeArr = moment().format(timeFormat).split('');
-        timeArr[separatorIndex] = 'separator';
-        return timeArr;
-    };
+        return this.convertDataToArr(moment().format(timeFormat), separatorIndex);
+    }
+    convertDataToArr(data, separatorIndex, separatorType = 'colon') {
+        let dataArr = data.split('');
+        dataArr[separatorIndex] = separatorType;
+        return dataArr;
+    }
+    /**
+     * Replace the appropriate background characters with the foreground ones
+     */
+    setFg() {
+        if (this.coin) {
+            fetch(`https://api.coinbase.com/v2/prices/${this.coin}/spot`)
+                .then((res) => {
+                return res.text();
+            })
+                .then((body) => {
+                const parsedData = JSON.parse(body);
+                if (parsedData.err)
+                    throw Error(parsedData.err.message);
+                let separatorIndex = parsedData.data.amount.indexOf('.');
+                this.draw(this.wasd(this.convertDataToArr(parsedData.data.amount, separatorIndex, 'dot')));
+            })
+                .catch((e) => {
+                console.log('something went wrong', e);
+            });
+        }
+        else {
+            this.draw(this.wasd(this.getTime()));
+        }
+    }
+    wasd(numToDisplay) {
+        let startingLeftIndex = 0;
+        const totalTextWidth = this.getTotalWidth(numToDisplay.length);
+        const terminalHorCenter = Math.floor(this.columns / 2);
+        let terminalOffset = terminalHorCenter - Math.floor(totalTextWidth / 2);
+        const terminalVerCenter = Math.floor(this.rows / 2);
+        const terminalVerOffset = terminalVerCenter - (this.font.height / 2);
+        if (numToDisplay.length === 4) {
+            terminalOffset += this.font.width;
+        }
+        let buffer = Array.from(this.buffer);
+        // cycle through the time numbers
+        for (let h = startingLeftIndex; h < numToDisplay.length; h++) {
+            const leftIndex = (h * (this.font.width + (this.font.padding * 2))) + terminalOffset;
+            // cycle through the height of the numbers
+            for (let i = 0; i < this.font.height; i++) {
+                // the row from the number to cycle through
+                const currentChar = this.font.characters[numToDisplay[h]];
+                const thisRow = currentChar[i].split('');
+                // replace the sections of the buffer with the section from the number
+                buffer[terminalVerOffset + i].splice(leftIndex, thisRow.length, ...thisRow);
+            }
+        }
+        return buffer;
+    }
+    /**
+     * Helper to Clear out the background
+     */
+    clear() {
+        clear();
+    }
     /**
      * Update the buffer
      */
-    Clock.prototype.update = function () {
+    update() {
         this.setSize();
         this.setBg();
         this.setFg();
-    };
+    }
     /**
-     * draw out the buffer
+     * draw out the buffer from `bufferToWrite`
      */
-    Clock.prototype.draw = function () {
-        var _this = this;
-        var toPaint = '';
-        this.buffer.forEach(function (row) {
-            var currentRow = row.reduce(function (prev, curr) {
-                return prev + _this.currentSet[curr];
+    draw(bufferToWrite) {
+        let toPaint = '';
+        bufferToWrite.forEach((row) => {
+            let currentRow = row.reduce((prev, curr) => {
+                return prev + this.currentSet[curr];
             }, '');
             toPaint += '\n' + currentRow;
         });
         this.clear();
         process.stdout.write(toPaint);
-    };
-    return Clock;
-}());
+    }
+}
 module.exports = Clock;
 //# sourceMappingURL=index.js.map
