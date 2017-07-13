@@ -147,17 +147,17 @@ class Clock {
                 if (parsedData.err)
                     throw Error(parsedData.err.message);
                 let separatorIndex = parsedData.data.amount.indexOf('.');
-                this.draw(this.wasd(this.convertDataToArr(parsedData.data.amount, separatorIndex, 'dot')));
+                this.draw(this.getNewBufferWithData(this.convertDataToArr(parsedData.data.amount, separatorIndex, 'dot')));
             })
                 .catch((e) => {
-                console.log('something went wrong', e);
+                console.log('something went wrong while getting the data from bitcoin', e);
             });
         }
         else {
-            this.draw(this.wasd(this.getTime()));
+            this.draw(this.getNewBufferWithData(this.getTime()));
         }
     }
-    wasd(numToDisplay) {
+    getNewBufferWithData(numToDisplay) {
         let startingLeftIndex = 0;
         const totalTextWidth = this.getTotalWidth(numToDisplay.length);
         const terminalHorCenter = Math.floor(this.columns / 2);
