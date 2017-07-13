@@ -4,7 +4,7 @@
 
 `> npm install cli-clock -g`
 
-ICli-Clock is a clock for your terminal. Once you run the program, it will display the current time on your terminal window and it will update every thirty seconds. The clock is formed by two characters, which are chosen from a preselected set of characters or passed as arguments by the user. Once the program starts, the application will measure the size of the current terminal window and display the time in the center of the window. * * Example usage:
+Cli-Clock is a clock for your terminal. Once you run the program, it will display the current time on your terminal window and it will update every thirty seconds. The clock is formed by two characters, which are chosen from a preselected set of characters or passed as arguments by the user. Once the program starts, the application will measure the size of the current terminal window and display the time in the center of the window. * * Example usage:
 
 ## Usage
 
