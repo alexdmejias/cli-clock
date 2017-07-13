@@ -1,6 +1,6 @@
 {
   "name": "cli-clock",
-  "version": "0.2.0",
+  "version": "0.3.0-beta.1",
   "main": "cli-clock.js",
   "scripts": {
     "start": "node cli-clock.js",
@@ -21,13 +21,13 @@
     "cli-clear": "^1.0.4",
     "cli-color": "^1.1.0",
     "commander": "^2.9.0",
-    "minimist": "^1.2.0",
     "moment": "^2.14.1",
+    "node-fetch": "^1.7.1",
     "source-map-support": "^0.4.2"
   },
   "devDependencies": {
     "typings": "^1.3.2",
-    "typescript": "^2.1.0-dev.20160725"
+    "typescript": "^2.4.1"
   },
   "repository": {
     "type": "git",

@@ -2,6 +2,7 @@ const utils = require('./utilities');
 const colors = require('cli-color');
 const clear = require('cli-clear');
 const moment = require('moment');
+const fetch = require('node-fetch');
 
 import fonts from './fonts';
 
@@ -16,6 +17,8 @@ class Clock {
   public fc: string = 'white';
   public bc: string = 'black';
 
+  public coin: string = '';
+
   public twelveHourFormat: boolean = true;
 
   public buffer: Array<number[]> = [];
@@ -25,7 +28,28 @@ class Clock {
     this.setColors(args);
     this.setSet(args);
     this.setFont();
-    this.setFormat(args);
+    if (args.coin) {
+      this.setCoin(args);
+    } else {
+      this.setFormat(args);
+    }
+  }
+
+  public setCoin(args): void {
+      if (args.coin && typeof args.coin === 'string') {
+        const acceptedCryptos = ['BTC', 'ETH', 'LTC'];
+        const acceptedCurrencies = ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BRL', 'BSD', 'BTC', 'BTN', 'BWP', 'BYN', 'BYR', 'BZD', 'CAD', 'CDF', 'CHF', 'CLF', 'CLP', 'CNY', 'COP', 'CRC', 'CUC', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EEK', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GGP', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'IMP', 'INR', 'IQD', 'ISK', 'JEP', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LTL', 'LVL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRO', 'MTL', 'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STD', 'SVC', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU', 'UZS', 'VEF', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU', 'XCD', 'XDR', 'XOF', 'XPD', 'XPF', 'XPT', 'YER', 'ZAR', 'ZMK', 'ZMW', 'ZWL'];
+        const givenPair = args.coin.split('-');
+        if (acceptedCryptos.indexOf(givenPair[0]) > -1 && acceptedCurrencies.indexOf(givenPair[1]) > -1) {
+          this.coin = args.coin;
+        } else {
+          console.log(`Not an accepted currency pair`);
+          process.exit();
+        }
+      } else {
+        console.log(`Not an accepted currency pair`);
+        process.exit();
+      }
   }
 
   public setColors(args): void {
@@ -49,7 +73,7 @@ class Clock {
   }
 
   /**
-   * Sets the set of characters to use for both the foreground 
+   * Sets the set of characters to use for both the foreground
    * and background
    */
   public setSet(args): void {
@@ -90,8 +114,8 @@ class Clock {
     }
   }
 
-  public getTotalWidth(): number {
-    return (this.font.width + (this.font.padding * 2)) * 5;
+  public getTotalWidth(numOfChars: number = 5): number {
+    return (this.font.width + (this.font.padding * 2)) * numOfChars;
   }
 
   public getTotalHeight(): number {
@@ -114,10 +138,52 @@ class Clock {
   }
 
   /**
+   * Get the numbers that will be displayed. Will come from the time object
+   */
+  public getTime(): string[] {
+    let timeFormat: string = 'HH:mm';
+    let separatorIndex: number = 2;
+    if (this.twelveHourFormat) {
+      timeFormat = 'h:mm';
+      separatorIndex = 1;
+    }
+
+    return this.convertDataToArr(moment().format(timeFormat), separatorIndex);
+  }
+
+  public convertDataToArr(data: string, separatorIndex: number, separatorType: string = 'colon'): string[] {
+    let dataArr: string[] = data.split('');
+
+    dataArr[separatorIndex] = separatorType;
+    return dataArr;
+  }
+
+  /**
    * Replace the appropriate background characters with the foreground ones
    */
   public setFg(): void {
-    const totalTextWidth = this.getTotalWidth();
+    if (this.coin) {
+    fetch(`https://api.coinbase.com/v2/prices/${this.coin}/spot`)
+      .then((res) => {
+        return res.text();
+      })
+      .then((body) => {
+        const parsedData = JSON.parse(body);
+        if (parsedData.err) throw Error(parsedData.err.message);
+        let separatorIndex = parsedData.data.amount.indexOf('.');
+        this.draw(this.getNewBufferWithData(this.convertDataToArr(parsedData.data.amount, separatorIndex, 'dot')));
+      })
+      .catch((e) =>{
+        console.log('something went wrong while getting the data from bitcoin', e);
+      });
+    } else {
+      this.draw(this.getNewBufferWithData(this.getTime()));
+    }
+  }
+
+  public getNewBufferWithData(numToDisplay: string[]): number[][] {
+    let startingLeftIndex: number = 0;
+    const totalTextWidth = this.getTotalWidth(numToDisplay.length);
 
     const terminalHorCenter = Math.floor(this.columns / 2);
     let terminalOffset = terminalHorCenter - Math.floor(totalTextWidth / 2);
@@ -125,13 +191,11 @@ class Clock {
     const terminalVerCenter = Math.floor(this.rows / 2);
     const terminalVerOffset = terminalVerCenter - (this.font.height / 2);
 
-    const numToDisplay = this.getTime();
-
-    let startingLeftIndex: number = 0;
-
     if (numToDisplay.length === 4) {
       terminalOffset += this.font.width;
     }
+
+    let buffer = Array.from(this.buffer);
 
     // cycle through the time numbers
     for (let h = startingLeftIndex; h < numToDisplay.length; h++) {
@@ -145,9 +209,11 @@ class Clock {
         const thisRow = currentChar[i].split('');
 
         // replace the sections of the buffer with the section from the number
-        this.buffer[terminalVerOffset + i].splice(leftIndex, thisRow.length, ...thisRow);
+        buffer[terminalVerOffset + i].splice(leftIndex, thisRow.length, ...thisRow);
       }
     }
+
+    return buffer;
   }
 
   /**
@@ -155,25 +221,6 @@ class Clock {
    */
   public clear(): void {
     clear();
-  }
-
-  /**
-   * Get the numbers that will be displayed. Will come from the time object
-   */
-  public getTime(): string[] {
-    let timeArr: string[];
-    let timeFormat: string = 'HH:mm';
-    let separatorIndex: number = 2;
-    if (this.twelveHourFormat) {
-      timeFormat = 'h:mm';
-      separatorIndex = 1;
-    }
-
-    timeArr = moment().format(timeFormat).split('');
-
-    timeArr[separatorIndex] = 'separator';
-
-    return timeArr;
   }
 
   /**
@@ -186,12 +233,12 @@ class Clock {
   }
 
   /**
-   * draw out the buffer
+   * draw out the buffer from `bufferToWrite`
    */
-  public draw(): void {
+  public draw(bufferToWrite: number[][]): void {
     let toPaint = '';
 
-    this.buffer.forEach((row) => {
+    bufferToWrite.forEach((row) => {
       let currentRow = row.reduce((prev, curr) => {
         return prev + this.currentSet[curr];
       }, '');

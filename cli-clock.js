@@ -2,31 +2,29 @@
 
 require('source-map-support/register');
 const program = require('commander');
+const package = require('./package.json');
 const Clock = require('./dist');
 
 const list = (val) => val.split(',');
 
 program
-  .version('0.4.0')
+  .version(package.version)
   .option('-b, --background [character]', 'baground character')
   .option('-f, --foreground [character]', 'foreground characters color')
   .option('-c, --colors [item(s)]', 'characters colors for the foreground and background, respectively', list)
   .option('-t, --twelve-hours', 'twelve hour format')
+  .option('-x, --coin [character]', 'coinbase compatible currency pair, eg: LTC-USD or ETH-USD')
+  .option('-i, --interval <n>', 'refresh rate, in milliseconds, defaults to 30 seconds')
   .parse(process.argv);
 
 const clock = new Clock(program);
 
-function update() {
-  clock.update();
-  clock.draw();
-}
-
 setInterval(() => {
-  update();
-}, 30000);
+  clock.update();
+}, program.interval || 30 * 1000);
 
 process.stdout.on('resize', () => {
-  update();
+  clock.update();
 });
 
-update();
+clock.update();

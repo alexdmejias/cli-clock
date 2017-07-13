@@ -27,5 +27,7 @@ Cli-Clock is a clock for your terminal. Once you run the program, it will displa
     $ cli-clock -b O -f 🐶 
     $ cli-clock -b O -f X -c "red,green" 
     $ cli-clock -b O -f X -c "red,green" -t
+    $ cli-clock -x "LTC-USD" -f 🐶
+    $ cli-clock -x "ETH-USD" -f o -b x
 
 ![screenshot](https://github.com/amejias101/cli-clock/raw/master/screenshot.png "First screenshot")
