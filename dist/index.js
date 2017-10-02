@@ -54,7 +54,7 @@ class Clock {
         }
     }
     setFont() {
-        this.font = fonts_1.default.fiveByEight;
+        this.font = fonts_1.default.atascii;
     }
     setFormat(args) {
         this.twelveHourFormat = args.twelveHours;
@@ -163,7 +163,7 @@ class Clock {
         const terminalHorCenter = Math.floor(this.columns / 2);
         let terminalOffset = terminalHorCenter - Math.floor(totalTextWidth / 2);
         const terminalVerCenter = Math.floor(this.rows / 2);
-        const terminalVerOffset = terminalVerCenter - (this.font.height / 2);
+        const terminalVerOffset = terminalVerCenter - Math.floor(this.font.height / 2);
         if (numToDisplay.length === 4) {
             terminalOffset += this.font.width;
         }

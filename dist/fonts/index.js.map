@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/fonts/index.ts"],"names":[],"mappings":";;AAAA,mDAA4C;AAE5C,kBAAe;IACb,WAAW,EAAX,qBAAW;CACZ,CAAA"}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/fonts/index.ts"],"names":[],"mappings":";;AAAA,mDAA4C;AAC5C,mDAA4C;AAC5C,2CAAoC;AAEpC,kBAAe;IACb,WAAW,EAAX,qBAAW;IACX,WAAW,EAAX,qBAAW;IACX,OAAO,EAAP,iBAAO;CACR,CAAA"}

@@ -65,7 +65,7 @@ class Clock {
   }
 
   public setFont(): void {
-    this.font = fonts.fiveByEight;
+    this.font = fonts.atascii;
   }
 
   public setFormat(args): void {
@@ -189,7 +189,7 @@ class Clock {
     let terminalOffset = terminalHorCenter - Math.floor(totalTextWidth / 2);
 
     const terminalVerCenter = Math.floor(this.rows / 2);
-    const terminalVerOffset = terminalVerCenter - (this.font.height / 2);
+    const terminalVerOffset = terminalVerCenter - Math.floor(this.font.height / 2);
 
     if (numToDisplay.length === 4) {
       terminalOffset += this.font.width;
