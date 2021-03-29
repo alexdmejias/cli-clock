@@ -4,8 +4,9 @@
   "main": "cli-clock.js",
   "scripts": {
     "start": "node cli-clock.js",
-    "prepublish": "typings i && tsc",
-    "build": "typings i && tsc"
+    "prepublish": "tsc",
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
   "keywords": [
     "cli",
@@ -18,16 +19,13 @@
   "author": "alex mejias",
   "license": "MIT",
   "dependencies": {
-    "cli-clear": "^1.0.4",
-    "cli-color": "^1.1.0",
-    "commander": "^2.9.0",
-    "moment": "^2.14.1",
-    "node-fetch": "^1.7.1",
-    "source-map-support": "^0.4.2"
+    "cli-color": "^2.0.0",
+    "commander": "^7.2.0",
+    "moment": "^2.29.1",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "typings": "^1.3.2",
-    "typescript": "^2.4.1"
+    "typescript": "^4.2.3"
   },
   "repository": {
     "type": "git",
