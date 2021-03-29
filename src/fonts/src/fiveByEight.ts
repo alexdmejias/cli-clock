@@ -1,3 +1,5 @@
+import types from '../../types';
+
 export default {
   name: 'fiveByEight',
   width: 5,
@@ -17,4 +19,4 @@ export default {
     'colon': ['00000', '00000', '00100', '00000', '00000', '00100', '00000', '00000'], //
     'dot': ['00000', '00000', '00000', '00000', '00000', '00000', '01100', '01100']
   }
-}
+} as types.font;

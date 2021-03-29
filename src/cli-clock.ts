@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-const program = new Command();
+import Clock from './index';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageFile = require('../package.json');
-const Clock = require('./index');
 
+const program = new Command();
 const list = (val) => val.split(',');
 
 program
@@ -29,6 +30,4 @@ setInterval(() => {
 process.stdout.on('resize', () => {
   clock.update();
 });
-console.log('options')
-console.log(options)
 clock.update();

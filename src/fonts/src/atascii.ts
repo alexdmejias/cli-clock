@@ -1,3 +1,5 @@
+import types from '../../types';
+
 export default {
   name: 'atascii',
   width: 4,
@@ -17,5 +19,4 @@ export default {
     'dot': ['000000', '000000', '000000', '000000', '001100', '001100'],
     'colon': ['000000', '001100', '001100', '000000', '001100', '001100']
   }
-}
-
+} as types.font;
