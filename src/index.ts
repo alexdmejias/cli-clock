@@ -132,20 +132,18 @@ export default class Clock implements types.IClock {
    * Get the numbers that will be displayed. Will come from the time object
    */
   public getTime(): string[] {
+    // TODO this doesn't need to run every time
     let timeFormat = 'HH:mm';
-    let separatorIndex = 2;
     if (this.twelveHourFormat) {
       timeFormat = 'h:mm';
-      separatorIndex = 1;
     }
 
-    return this.convertDataToArr(moment().format(timeFormat), separatorIndex);
+    return this.convertDataToArr(moment().format(timeFormat));
   }
 
-  public convertDataToArr(data: string, separatorIndex: number, separatorType = 'colon'): string[] {
+  public convertDataToArr(data: string): string[] {
     const dataArr: string[] = data.split('');
 
-    dataArr[separatorIndex] = separatorType;
     return dataArr;
   }
 
@@ -161,11 +159,10 @@ export default class Clock implements types.IClock {
         .then((body) => {
           const parsedData = JSON.parse(body);
           if (parsedData.err) throw Error(parsedData.err.message);
-          const separatorIndex = parsedData.data.amount.indexOf('.');
-          this.draw(this.getNewBufferWithData(this.convertDataToArr(parsedData.data.amount, separatorIndex, 'dot')));
+          this.draw(this.getNewBufferWithData(this.convertDataToArr(parsedData.data.amount)));
         })
         .catch((e) =>{
-          console.log('something went wrong while getting the data from bitcoin', e);
+          console.log('something went wrong while getting the data from coinbase', e);
         });
     } else {
       this.draw(this.getNewBufferWithData(this.getTime()));
@@ -192,11 +189,12 @@ export default class Clock implements types.IClock {
     for (let h = startingLeftIndex; h < numToDisplay.length; h++) {
       const leftIndex = (h * (this.font.width + (this.font.padding * 2))) + terminalOffset;
 
+      // the row from the number to cycle through
+      const currentChar = this.font.characters[numToDisplay[h]];
+
       // cycle through the height of the numbers
       for (let i = 0; i < this.font.height; i++) {
 
-        // the row from the number to cycle through
-        const currentChar = this.font.characters[numToDisplay[h]];
         const thisRow = currentChar[i].split('');
 
         // replace the sections of the buffer with the section from the number
