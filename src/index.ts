@@ -175,26 +175,26 @@ class Clock implements IClock {
    */
   public setFg(): void {
     if (this.coin) {
-    fetch(`https://api.coinbase.com/v2/prices/${this.coin}/spot`)
-      .then((res) => {
-        return res.text();
-      })
-      .then((body) => {
-        const parsedData = JSON.parse(body);
-        if (parsedData.err) throw Error(parsedData.err.message);
-        let separatorIndex = parsedData.data.amount.indexOf('.');
-        this.draw(this.getNewBufferWithData(this.convertDataToArr(parsedData.data.amount, separatorIndex, 'dot')));
-      })
-      .catch((e) =>{
-        console.log('something went wrong while getting the data from bitcoin', e);
-      });
+      fetch(`https://api.coinbase.com/v2/prices/${this.coin}/spot`)
+        .then((res) => {
+          return res.text();
+        })
+        .then((body) => {
+          const parsedData = JSON.parse(body);
+          if (parsedData.err) throw Error(parsedData.err.message);
+          let separatorIndex = parsedData.data.amount.indexOf('.');
+          this.draw(this.getNewBufferWithData(this.convertDataToArr(parsedData.data.amount, separatorIndex, 'dot')));
+        })
+        .catch((e) =>{
+          console.log('something went wrong while getting the data from bitcoin', e);
+        });
     } else {
       this.draw(this.getNewBufferWithData(this.getTime()));
     }
   }
 
   public getNewBufferWithData(numToDisplay: string[]): number[][] {
-    let startingLeftIndex: number = 0;
+    let startingLeftIndex = 0;
     const totalTextWidth = this.getTotalWidth(numToDisplay.length);
 
     const terminalHorCenter = Math.floor(this.columns / 2);
@@ -221,7 +221,7 @@ class Clock implements IClock {
         const thisRow = currentChar[i].split('');
 
         // replace the sections of the buffer with the section from the number
-        buffer[terminalVerOffset + i].splice(leftIndex, thisRow.length, ...thisRow);
+        buffer[terminalVerOffset + i].splice(leftIndex, thisRow.length, ...thisRow.map(x => x === '1' ? 1 : 0));
       }
     }
 
