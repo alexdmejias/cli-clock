@@ -1,18 +1,41 @@
 const utils = require('./utilities');
 const colors = require('cli-color');
-const clear = require('cli-clear');
 const moment = require('moment');
 const fetch = require('node-fetch');
 
 import fonts from './fonts';
 
-class Clock {
+interface IClock {
+  rows: number;
+  columns: number;
+  currentSet: characterSet;
+  font: font;
+  fc: string;
+  bc: string;
+  coin: string;
+  twelveHourFormat: boolean;
+}
+
+type font = {
+  name: string;
+  width: number;
+  height: number;
+  padding: number;
+  characters: Record<string, string[]>;
+}
+
+type characterSet = [string, string]
+
+const availableSets: Array<characterSet> = [['•', 'X'], ['\\', '/'], ['-', '_'], ['0', '1'], [' ', '█']];
+const acceptedCryptos = ['BTC', 'ETH', 'LTC'];
+const acceptedCurrencies = ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BRL', 'BSD', 'BTC', 'BTN', 'BWP', 'BYN', 'BYR', 'BZD', 'CAD', 'CDF', 'CHF', 'CLF', 'CLP', 'CNY', 'COP', 'CRC', 'CUC', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EEK', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GGP', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'IMP', 'INR', 'IQD', 'ISK', 'JEP', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LTL', 'LVL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRO', 'MTL', 'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STD', 'SVC', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU', 'UZS', 'VEF', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU', 'XCD', 'XDR', 'XOF', 'XPD', 'XPF', 'XPT', 'YER', 'ZAR', 'ZMK', 'ZMW', 'ZWL'];
+
+class Clock implements IClock {
   public rows: number;
   public columns: number;
 
-  public availableSets: Array<string[]> = [['•', 'X'], ['\\', '/'], ['-', '_'], ['0', '1'], [' ', '█']];
-  public currentSet: string[];
-  public font;
+  public currentSet: characterSet;
+  public font: font = fonts.atascii;
 
   public fc: string = 'white';
   public bc: string = 'black';
@@ -27,7 +50,7 @@ class Clock {
     this.setSize();
     this.setColors(args);
     this.setSet(args);
-    this.setFont();
+    this.setFont(args);
     if (args.coin) {
       this.setCoin(args);
     } else {
@@ -37,8 +60,6 @@ class Clock {
 
   public setCoin(args): void {
       if (args.coin && typeof args.coin === 'string') {
-        const acceptedCryptos = ['BTC', 'ETH', 'LTC'];
-        const acceptedCurrencies = ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BRL', 'BSD', 'BTC', 'BTN', 'BWP', 'BYN', 'BYR', 'BZD', 'CAD', 'CDF', 'CHF', 'CLF', 'CLP', 'CNY', 'COP', 'CRC', 'CUC', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EEK', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GGP', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'IMP', 'INR', 'IQD', 'ISK', 'JEP', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LTL', 'LVL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRO', 'MTL', 'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STD', 'SVC', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU', 'UZS', 'VEF', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU', 'XCD', 'XDR', 'XOF', 'XPD', 'XPF', 'XPT', 'YER', 'ZAR', 'ZMK', 'ZMW', 'ZWL'];
         const givenPair = args.coin.split('-');
         if (acceptedCryptos.indexOf(givenPair[0]) > -1 && acceptedCurrencies.indexOf(givenPair[1]) > -1) {
           this.coin = args.coin;
@@ -64,8 +85,8 @@ class Clock {
     }
   }
 
-  public setFont(): void {
-    this.font = fonts.atascii;
+  public setFont(args): void {
+    this.font = fonts[args.font] ? fonts[args.font] : fonts.atascii;
   }
 
   public setFormat(args): void {
@@ -77,10 +98,10 @@ class Clock {
    * and background
    */
   public setSet(args): void {
-    this.currentSet = this.availableSets[utils.getRandom(this.availableSets)];
+    this.currentSet = availableSets[utils.getRandom(availableSets)];
     // randomly reverse the array, so we can have a random BG and FG
     if (Math.round(Math.random())) {
-      this.currentSet = this.currentSet.reverse();
+      this.currentSet = this.currentSet.reverse() as characterSet;
     }
 
     if (args.background) {
@@ -102,15 +123,6 @@ class Clock {
     } else {
       this.rows = 20;
       this.columns = 50;
-    }
-  }
-
-  // returns the size of the first character in a set
-  public getLetterDimensions(character): {height: number, padding: number, width: number} {
-    return {
-      height: character.length,
-      padding: 1,
-      width: character[0].split('').length
     }
   }
 
@@ -220,7 +232,7 @@ class Clock {
    * Helper to Clear out the background
    */
   public clear(): void {
-    clear();
+    console.clear()
   }
 
   /**
