@@ -11,7 +11,7 @@ const list = (val) => val.split(',');
 
 program
   .version(packageFile.version)
-  .option('-b, --background [character]', 'baground character')
+  .option('-b, --background [character]', 'background character')
   .option('-f, --foreground [character]', 'foreground characters color')
   .option('-c, --colors [item(s)]', 'characters colors for the foreground and background, respectively', list)
   .option('-F, --font <type>', 'TODO')
