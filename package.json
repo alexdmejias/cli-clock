@@ -25,16 +25,19 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.19.0",
+    "@typescript-eslint/parser": "^4.19.0",
+    "eslint": "^7.23.0",
     "typescript": "^4.2.3"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/amejias101/cli-clock.git"
+    "url": "git+https://github.com/alexdmejias/cli-clock.git"
   },
   "bugs": {
-    "url": "https://github.com/amejias101/cli-clock/issues"
+    "url": "https://github.com/alexdmejias/cli-clock/issues"
   },
-  "homepage": "https://github.com/amejias101/cli-clock#readme",
+  "homepage": "https://github.com/alexdmejias/cli-clock#readme",
   "description": "",
   "preferGlobal": true
 }
